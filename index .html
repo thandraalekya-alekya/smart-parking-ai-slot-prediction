@@ -1,361 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI Smart Parking System</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>AI Smart Parking System</title>
 
-  <style>
+<style>
 
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:Arial, sans-serif;
-    }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
-    body{
-      background:#0f172a;
-      color:white;
-      padding:20px;
-    }
+body{
+    font-family: Arial, sans-serif;
+    background:#0f172a;
+    color:white;
+    padding:20px;
+    text-align:center;
+}
 
-    h1{
-      text-align:center;
-      margin-bottom:25px;
-      color:#38bdf8;
-    }
+h1{
+    margin-bottom:10px;
+    font-size:40px;
+}
 
-    .dashboard{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:20px;
-      margin-bottom:25px;
-    }
+.subtitle{
+    margin-bottom:30px;
+    color:#cbd5e1;
+    font-size:18px;
+}
 
-    .card{
-      background:#1e293b;
-      padding:20px;
-      border-radius:12px;
-      text-align:center;
-      box-shadow:0 4px 10px rgba(0,0,0,0.3);
-    }
+.dashboard{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    margin-top:20px;
+}
 
-    .card h2{
-      margin-bottom:10px;
-      color:#38bdf8;
-    }
+.card{
+    background:#1e293b;
+    padding:20px;
+    border-radius:20px;
+    box-shadow:0 0 10px rgba(0,0,0,0.4);
+}
 
-    .parking-section{
-      background:#1e293b;
-      padding:20px;
-      border-radius:12px;
-      margin-bottom:25px;
-    }
+.slot{
+    height:220px;
+}
 
-    .parking-grid{
-      display:grid;
-      grid-template-columns:repeat(5,1fr);
-      gap:15px;
-      margin-top:20px;
-    }
+.slot h2{
+    margin-bottom:15px;
+}
 
-    .slot{
-      padding:25px;
-      border-radius:10px;
-      text-align:center;
-      font-weight:bold;
-      cursor:pointer;
-      transition:0.3s;
-    }
+.status{
+    font-size:24px;
+    font-weight:bold;
+    margin:20px 0;
+}
 
-    .free{
-      background:#22c55e;
-    }
+.available{
+    color:#22c55e;
+}
 
-    .occupied{
-      background:#ef4444;
-    }
+.occupied{
+    color:#ef4444;
+}
 
-    .predicted{
-      background:#f59e0b;
-    }
+.timer{
+    margin-top:10px;
+    font-size:18px;
+    color:#facc15;
+}
 
-    button{
-      margin-top:20px;
-      padding:12px 20px;
-      border:none;
-      border-radius:8px;
-      background:#38bdf8;
-      color:white;
-      cursor:pointer;
-      font-size:16px;
-    }
+button{
+    margin-top:20px;
+    padding:12px 20px;
+    border:none;
+    border-radius:10px;
+    background:#3b82f6;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
 
-    button:hover{
-      background:#0ea5e9;
-    }
+button:hover{
+    background:#2563eb;
+}
 
-    .chart-section{
-      background:#1e293b;
-      padding:20px;
-      border-radius:12px;
-    }
+.algorithm{
+    margin-top:40px;
+    background:#1e293b;
+    padding:25px;
+    border-radius:20px;
+}
 
-    canvas{
-      background:white;
-      border-radius:10px;
-      padding:10px;
-    }
+.algorithm h2{
+    margin-bottom:20px;
+}
 
-    footer{
-      text-align:center;
-      margin-top:30px;
-      color:#94a3b8;
-    }
+.steps{
+    text-align:left;
+    max-width:500px;
+    margin:auto;
+    line-height:2;
+    font-size:18px;
+}
 
-    @media(max-width:700px){
+.prediction-box{
+    margin-top:40px;
+    background:#1e293b;
+    padding:25px;
+    border-radius:20px;
+}
 
-      .parking-grid{
-        grid-template-columns:repeat(2,1fr);
-      }
+.prediction-box h2{
+    margin-bottom:15px;
+}
 
-    }
+.footer{
+    margin-top:40px;
+    color:#94a3b8;
+}
 
-  </style>
+</style>
 </head>
 
 <body>
 
-  <h1>🚗 AI Smart Parking System</h1>
+<h1>🚗 AI SMART PARKING SYSTEM</h1>
 
-  <div class="dashboard">
+<div class="subtitle">
+With Future Slot Prediction
+</div>
 
-    <div class="card">
-      <h2>Total Slots</h2>
-      <h1 id="totalSlots">20</h1>
-    </div>
+<div class="dashboard">
 
-    <div class="card">
-      <h2>Available Slots</h2>
-      <h1 id="availableSlots">0</h1>
-    </div>
+<div class="card slot">
+    <h2>Parking Slot 1</h2>
+    <div class="status available">AVAILABLE</div>
+    <p>Vehicle Not Detected</p>
+    <div class="timer">Free Now</div>
 
-    <div class="card">
-      <h2>AI Predicted Free Slots</h2>
-      <h1 id="predictedSlots">0</h1>
-    </div>
-
-  </div>
-
-  <div class="parking-section">
-
-    <h2>Parking Slots</h2>
-
-    <div class="parking-grid" id="parkingGrid"></div>
-
-  </div>
-
-  <div class="chart-section">
-
-    <h2>Future Parking Prediction</h2>
-
-    <canvas id="chart"></canvas>
-
-    <button onclick="runPrediction()">
-      Run AI Prediction
+    <button onclick="reserveSlot(1)">
+        Reserve Slot
     </button>
+</div>
 
-  </div>
+<div class="card slot">
+    <h2>Parking Slot 2</h2>
+    <div class="status occupied">OCCUPIED</div>
+    <p>Vehicle Present</p>
+    <div class="timer">Free in 15 mins</div>
 
-  <footer>
-    Smart Parking System with AI Prediction
-  </footer>
+    <button onclick="occupiedAlert()">
+        Occupied
+    </button>
+</div>
+
+<div class="card slot">
+    <h2>Parking Slot 3</h2>
+    <div class="status available">AVAILABLE</div>
+    <p>Vehicle Not Detected</p>
+    <div class="timer">Free Now</div>
+
+    <button onclick="reserveSlot(3)">
+        Reserve Slot
+    </button>
+</div>
+
+<div class="card slot">
+    <h2>Parking Slot 4</h2>
+    <div class="status occupied">OCCUPIED</div>
+    <p>Vehicle Present</p>
+    <div class="timer">Free in 8 mins</div>
+
+    <button onclick="occupiedAlert()">
+        Occupied
+    </button>
+</div>
+
+</div>
+
+<div class="prediction-box">
+
+<h2>🤖 AI Prediction</h2>
+
+<p style="font-size:20px;">
+2 Parking Slots may become available within the next 20 minutes.
+</p>
+
+</div>
+
+<div class="algorithm">
+
+<h2>📊 Algorithm Flow</h2>
+
+<div class="steps">
+
+1. Start System<br>
+2. Read Sensor Data<br>
+3. Check Vehicle Presence<br>
+4. If Vehicle Present → Slot Occupied<br>
+5. Else → Slot Available<br>
+6. Predict Future Free Time<br>
+7. Display Slot Status<br>
+8. User Can Reserve Slot<br>
+9. Repeat Process Continuously<br>
+
+</div>
+
+</div>
+
+<div class="footer">
+Smart Parking System using AI Future Slot Prediction
+</div>
 
 <script>
 
-  const totalSlots = 20;
-
-  const parkingGrid =
-  document.getElementById("parkingGrid");
-
-  let slots = [];
-
-  function createSlots(){
-
-    slots = [];
-
-    for(let i=1;i<=totalSlots;i++){
-
-      slots.push({
-        id:i,
-        occupied:Math.random() > 0.5
-      });
-
-    }
-
-    renderSlots();
-  }
-
-  function renderSlots(){
-
-    parkingGrid.innerHTML = "";
-
-    slots.forEach((slot,index)=>{
-
-      const div =
-      document.createElement("div");
-
-      div.classList.add("slot");
-
-      if(slot.occupied){
-        div.classList.add("occupied");
-      }else{
-        div.classList.add("free");
-      }
-
-      div.innerHTML = `
-        Slot ${slot.id}<br>
-        ${slot.occupied ? "Occupied" : "Free"}
-      `;
-
-      div.onclick = ()=>{
-        toggleSlot(index);
-      };
-
-      parkingGrid.appendChild(div);
-
-    });
-
-    updateStats();
-  }
-
-  function toggleSlot(index){
-
-    slots[index].occupied =
-    !slots[index].occupied;
-
-    renderSlots();
-  }
-
-  function updateStats(){
-
-    const available =
-    slots.filter(
-      slot => !slot.occupied
-    ).length;
-
-    document.getElementById(
-      "availableSlots"
-    ).innerText = available;
-  }
-
-  function runPrediction(){
-
-    let predicted = 0;
-
-    const slotElements =
-    document.querySelectorAll(".slot");
-
-    slotElements.forEach((div)=>{
-
-      div.classList.remove("predicted");
-
-      if(Math.random() > 0.8){
-
-        div.classList.add("predicted");
-
-        predicted++;
-      }
-
-    });
-
-    document.getElementById(
-      "predictedSlots"
-    ).innerText = predicted;
-
-    generateChart();
-  }
-
-  function generateChart(){
-
-    const labels = [];
-    const values = [];
-
-    for(let i=1;i<=12;i++){
-
-      labels.push(i + " PM");
-
-      values.push(
-        Math.floor(
-          Math.random() * totalSlots
-        )
-      );
-
-    }
-
-    const ctx =
-    document.getElementById("chart");
-
-    if(window.chartInstance){
-      window.chartInstance.destroy();
-    }
-
-    window.chartInstance =
-    new Chart(ctx,{
-
-      type:"line",
-
-      data:{
-
-        labels:labels,
-
-        datasets:[{
-
-          label:"Predicted Occupancy",
-
-          data:values,
-
-          borderColor:"#38bdf8",
-
-          backgroundColor:
-          "rgba(56,189,248,0.2)",
-
-          fill:true,
-
-          tension:0.4
-
-        }]
-
-      },
-
-      options:{
-
-        responsive:true,
-
-        plugins:{
-          legend:{
-            labels:{
-              color:"black"
-            }
-          }
-        },
-
-        scales:{
-          y:{
-            beginAtZero:true
-          }
-        }
-
-      }
-
-    });
-
-  }
-
-  createSlots();
+function reserveSlot(slot){
+
+    alert(
+        "Parking Slot " + slot + " Reserved Successfully!"
+    );
+}
+
+function occupiedAlert(){
+
+    alert(
+        "This slot is currently occupied."
+    );
+}
 
 </script>
 
